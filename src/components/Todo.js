@@ -24,30 +24,6 @@ export default class Todo extends React.Component {
     }
   }
 
-  removeItem(el) {
-    // Remove the item which has the same id as the one we are deleting
-    let todos = this.state.todos.filter(function(item) {
-      return item.id !== el.props.id;
-    });
-
-    // Update state
-    this.setState({todos: todos});
-  }
-
-  saveItem(el) {
-    // Make a copy of todos
-    let todos = this.state.todos.slice();
-
-    // Find the index (position) of item in array
-    let index = todos.findIndex(x => x.id === el.props.id);
-
-    // Find the item and update it
-    todos[index] = Object.assign(todos[index], {desc: el.state.desc});
-
-    // Update state
-    this.setState({todos: todos});
-  }
-
   handleAddChange(event) {
     this.setState({add: event.target.value});
   }

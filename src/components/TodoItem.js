@@ -1,4 +1,5 @@
 import React from 'react';
+import Util from '../lib/util';
 
 export default class TodoItem extends React.Component{
 
@@ -6,8 +7,8 @@ export default class TodoItem extends React.Component{
     super(props);
     this.state = {
       mode: 'default',
-      completed: this.props.completed,
-      desc: this.props.desc
+      completed: this.props.item.completed,
+      desc: this.props.item.desc
     }
   }
 
@@ -17,7 +18,14 @@ export default class TodoItem extends React.Component{
 
   handleConfirm() {
     this.setState({mode: 'default'});
-    this.props.todo.removeItem(this);
+
+    // Remove the item which has the same id as the one we are deleting
+    let todos = this.props.todo.state.todos.filter((item) => {
+      return item.id !== this.props.item.id;
+    });
+
+    // Update state
+    this.props.todo.setState({todos: todos});
   }
 
   handleEdit() {
@@ -34,7 +42,18 @@ export default class TodoItem extends React.Component{
 
   handleSave() {
     this.setState({mode: 'default'});
-    this.props.todo.saveItem(this);
+
+    // Make a copy of todos
+    let todos = this.props.todo.state.todos.slice();
+
+    // Find the index (position) of item in array
+    let index = todos.findIndex(x => x.id === this.props.item.id);
+
+    // Find the item and update it
+    todos[index] = Object.assign(todos[index], {desc: this.state.desc});
+
+    // Update state
+    this.setState({todos: todos});
   }
 
   handleCompleted() {
@@ -53,7 +72,7 @@ export default class TodoItem extends React.Component{
       case 'delete':
         return(
           <li>
-            Delete {this.props.desc}?
+            Delete {this.props.item.desc}?
             <button onClick={this.handleConfirm.bind(this)}>Yes</button>
             <button onClick={this.handleCancel.bind(this)}>No</button>
           </li>
@@ -66,8 +85,8 @@ export default class TodoItem extends React.Component{
         return(
           <li>
             <input type="checkbox" checked={this.state.completed} onChange={this.handleCompleted.bind(this)} />
-            <span style={cs}>{this.props.desc}</span>
-            <span className="item-date">{this.props.date}</span>
+            <span style={cs}>{this.props.item.desc}</span>
+            <span className="item-date">{Util.string(this.props.item.date)}</span>
             <button onClick={this.handleEdit.bind(this)}>Edit</button>
             <button onClick={this.handleDelete.bind(this)}>Delete</button>
           </li>
